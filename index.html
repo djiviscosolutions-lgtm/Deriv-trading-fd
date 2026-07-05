@@ -3,12 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Nexus Pro Institutional Trading Engine</title>
+  <title>Nexus Pro | Institutional Forex Workspace</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <!-- SECURITY CHECK AUTHENTICATION MODAL -->
   <div id="authModal" class="modal-overlay hidden">
     <div class="auth-box">
       <div class="modal-close" onclick="closeAuthModal()">&times;</div>
@@ -16,59 +15,97 @@
     </div>
   </div>
 
-  <!-- PLATFORM WRAPPER -->
   <div class="dashboard">
     <header class="main-header">
       <div class="logo-area">
-        <h1>NEXUS <span class="light-text">PRO</span></h1>
+        <h1>NEXUS <span class="light-text">FX ENGINE</span></h1>
         <div class="env-toggle-container">
-          <button id="demoBtn" class="env-btn active" onclick="switchEnvironment('DEMO')">Demo Account</button>
-          <button id="realBtn" class="env-btn" onclick="switchEnvironment('REAL')">Live Market</button>
+          <button id="demoBtn" class="env-btn active" onclick="switchEnvironment('DEMO')">Demo Core</button>
+          <button id="realBtn" class="env-btn" onclick="switchEnvironment('REAL')">Live Exchange</button>
         </div>
       </div>
+
+      <nav class="central-nav-links">
+        <a href="index.html" class="nav-tab active">Trading Desk</a>
+        <a href="educational.html" class="nav-tab">Analysis Guide</a>
+        <a href="profile.html" class="nav-tab">Account Vault</a>
+      </nav>
+      
       <div id="authHeaderActions">
         <button class="btn btn-primary btn-sm" onclick="openAuthModal('login')">Sign In</button>
-        <button class="btn btn-secondary btn-sm" onclick="openAuthModal('register')">Create Account</button>
+        <button class="btn btn-secondary btn-sm" onclick="openAuthModal('register')">Register Node</button>
       </div>
     </header>
 
     <main class="grid">
-      <!-- Live Dynamic Canvas Layout Block -->
       <section class="card chart-container-card">
         <div class="card-header">
           <div class="chart-title-group">
-            <h3>Interactive Feed</h3>
+            <h3>Interactive Market Matrix</h3>
             <span id="activeAssetLabel" class="asset-ticker">EUR/USD</span>
           </div>
-          <span id="chartFeedBadge" class="badge demo-badge">Demo Feed</span>
+          <div class="chart-controls-instruction">
+            <span class="control-tip">🖱️ Left-Click + Drag to Pan History</span> | 
+            <span class="control-tip">📜 Wheel to Zoom Candles</span>
+            <span id="chartFeedBadge" class="badge demo-badge">Demo Feed</span>
+          </div>
         </div>
         <div id="chartWrapper">
           <canvas id="customChart"></canvas>
         </div>
       </section>
 
-      <!-- Sidebar Operations Control Grid -->
       <div class="sidebar-panels">
         <section class="card compact-card">
-          <h3>Asset Configuration</h3>
+          <h3>Currency Pairs Pair</h3>
           <select id="pair" class="form-select" onchange="changePair()">
-            <option value="EUR/USD">EUR/USD</option>
-            <option value="GBP/USD">GBP/USD</option>
-            <option value="USD/JPY">USD/JPY</option>
-            <option value="BTC/USD">BTC/USD</option>
+            <option value="EUR/USD">EUR/USD (Euro / US Dollar)</option>
+            <option value="GBP/USD">GBP/USD (British Pound / US Dollar)</option>
+            <option value="USD/JPY">USD/JPY (US Dollar / Japanese Yen)</option>
+            <option value="BTC/USD">BTC/USD (Bitcoin / US Dollar)</option>
           </select>
           <h2 id="price" class="metric price-display">1.1000</h2>
         </section>
 
         <section class="card compact-card">
-          <h3>Order Desk</h3>
+          <h3>Risk Management Panel</h3>
+          
           <div class="input-group">
-            <label for="amount">Contract Investment size (USD)</label>
-            <input type="number" id="amount" value="1000" min="1">
+            <label for="amount">Margin Investment Size (USD)</label>
+            <input type="number" id="amount" value="1000" min="10">
           </div>
+
+          <div class="input-group">
+            <label for="tradeTypeSelect">Execution Execution Framework</label>
+            <select id="tradeTypeSelect" class="form-select" onchange="toggleOrderInputLayout()">
+              <option value="SPOT">Spot Order (Stop Loss / Take Profit)</option>
+              <option value="DURATION">Duration Options Contract (Deriv Style)</option>
+            </select>
+          </div>
+
+          <div id="spotInputContainer" class="conditional-input-block">
+            <div class="input-row-grid">
+              <div class="input-group">
+                <label for="stopLossInput">Stop Loss (Pips)</label>
+                <input type="number" id="stopLossInput" value="30" min="5" placeholder="e.g. 30">
+              </div>
+              <div class="input-group">
+                <label for="takeProfitInput">Take Profit (Pips)</label>
+                <input type="number" id="takeProfitInput" value="60" min="5" placeholder="e.g. 60">
+              </div>
+            </div>
+          </div>
+
+          <div id="durationInputContainer" class="conditional-input-block hidden">
+            <div class="input-group">
+              <label for="durationInput">Expiration Frame (Seconds)</label>
+              <input type="number" id="durationInput" value="30" min="10" max="300">
+            </div>
+          </div>
+
           <div class="btn-group">
-            <button class="btn btn-success" onclick="executeMarketOrder('BUY')">Buy / Long</button>
-            <button class="btn btn-danger" onclick="executeMarketOrder('SELL')">Sell / Short</button>
+            <button class="btn btn-success" onclick="executeForexOrder('BUY')">Long / Buy</button>
+            <button class="btn btn-danger" onclick="executeForexOrder('SELL')">Short / Sell</button>
           </div>
           <p id="tradeMsg" class="status-msg"></p>
         </section>
@@ -79,39 +116,38 @@
         </section>
       </div>
 
-      <!-- Active Risk Management: Open Trades Desk -->
       <section class="card full-width">
-        <h3>Active Working Contracts (Live Executions)</h3>
+        <h3>Active Working Institutional Contracts</h3>
         <div class="table-wrapper">
           <table class="pro-table">
             <thead>
               <tr>
-                <th>ID</th>
-                <th>Environment</th>
+                <th>Contract ID</th>
                 <th>Asset</th>
+                <th>Framework</th>
                 <th>Type</th>
-                <th>Entry Price</th>
+                <th>Entry Target</th>
+                <th>Risk Parameters / Conditions</th>
                 <th>Volume</th>
-                <th>Current Price</th>
-                <th>Real-time Profit/Loss</th>
+                <th>Market Price</th>
+                <th>Live Net PnL</th>
                 <th>Action</th>
               </tr>
             </thead>
             <tbody id="activePositionsTableBody">
               <tr>
-                <td colspan="9" class="table-empty-row">No active positions currently running in the market.</td>
+                <td colspan="10" class="table-empty-row">No active positions currently exposed to market volatility.</td>
               </tr>
             </tbody>
           </table>
         </div>
       </section>
 
-      <!-- Institutional Transaction History Ledger -->
       <section class="card full-width">
-        <h3>Closed Historical Ledger Logs</h3>
+        <h3>Closed Transaction Archive Clearing Logs</h3>
         <div class="table-wrapper">
           <ul id="history" class="ledger-list">
-            <li class="ledger-empty">Terminal initialized. Awaiting market executions...</li>
+            <li class="ledger-empty">Archived system ready. Awaiting market entry sequences...</li>
           </ul>
         </div>
       </section>
