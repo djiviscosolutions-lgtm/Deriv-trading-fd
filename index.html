@@ -3,11 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Nexus Premium Trading Terminal</title>
+  <title>Nexus Pro Institutional Trading Engine</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
+  <!-- SECURITY CHECK AUTHENTICATION MODAL -->
   <div id="authModal" class="modal-overlay hidden">
     <div class="auth-box">
       <div class="modal-close" onclick="closeAuthModal()">&times;</div>
@@ -15,17 +16,16 @@
     </div>
   </div>
 
+  <!-- PLATFORM WRAPPER -->
   <div class="dashboard">
     <header class="main-header">
       <div class="logo-area">
-        <h1>NEXUS <span class="light-text">TERMINAL</span></h1>
-        
+        <h1>NEXUS <span class="light-text">PRO</span></h1>
         <div class="env-toggle-container">
           <button id="demoBtn" class="env-btn active" onclick="switchEnvironment('DEMO')">Demo Account</button>
           <button id="realBtn" class="env-btn" onclick="switchEnvironment('REAL')">Live Market</button>
         </div>
       </div>
-      
       <div id="authHeaderActions">
         <button class="btn btn-primary btn-sm" onclick="openAuthModal('login')">Sign In</button>
         <button class="btn btn-secondary btn-sm" onclick="openAuthModal('register')">Create Account</button>
@@ -33,9 +33,13 @@
     </header>
 
     <main class="grid">
+      <!-- Live Dynamic Canvas Layout Block -->
       <section class="card chart-container-card">
         <div class="card-header">
-          <h3>Market Analytics</h3>
+          <div class="chart-title-group">
+            <h3>Interactive Feed</h3>
+            <span id="activeAssetLabel" class="asset-ticker">EUR/USD</span>
+          </div>
           <span id="chartFeedBadge" class="badge demo-badge">Demo Feed</span>
         </div>
         <div id="chartWrapper">
@@ -43,9 +47,10 @@
         </div>
       </section>
 
+      <!-- Sidebar Operations Control Grid -->
       <div class="sidebar-panels">
         <section class="card compact-card">
-          <h3>Asset Allocation</h3>
+          <h3>Asset Configuration</h3>
           <select id="pair" class="form-select" onchange="changePair()">
             <option value="EUR/USD">EUR/USD</option>
             <option value="GBP/USD">GBP/USD</option>
@@ -56,14 +61,14 @@
         </section>
 
         <section class="card compact-card">
-          <h3>Order Execution</h3>
+          <h3>Order Desk</h3>
           <div class="input-group">
-            <label for="amount">Order Size (USD)</label>
-            <input type="number" id="amount" placeholder="0.00" min="1">
+            <label for="amount">Contract Investment size (USD)</label>
+            <input type="number" id="amount" value="1000" min="1">
           </div>
           <div class="btn-group">
-            <button class="btn btn-success" onclick="buyTrade()">Buy / Long</button>
-            <button class="btn btn-danger" onclick="sellTrade()">Sell / Short</button>
+            <button class="btn btn-success" onclick="executeMarketOrder('BUY')">Buy / Long</button>
+            <button class="btn btn-danger" onclick="executeMarketOrder('SELL')">Sell / Short</button>
           </div>
           <p id="tradeMsg" class="status-msg"></p>
         </section>
@@ -74,11 +79,39 @@
         </section>
       </div>
 
+      <!-- Active Risk Management: Open Trades Desk -->
       <section class="card full-width">
-        <h3>Execution Order Ledger</h3>
+        <h3>Active Working Contracts (Live Executions)</h3>
+        <div class="table-wrapper">
+          <table class="pro-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Environment</th>
+                <th>Asset</th>
+                <th>Type</th>
+                <th>Entry Price</th>
+                <th>Volume</th>
+                <th>Current Price</th>
+                <th>Real-time Profit/Loss</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="activePositionsTableBody">
+              <tr>
+                <td colspan="9" class="table-empty-row">No active positions currently running in the market.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Institutional Transaction History Ledger -->
+      <section class="card full-width">
+        <h3>Closed Historical Ledger Logs</h3>
         <div class="table-wrapper">
           <ul id="history" class="ledger-list">
-            <li class="ledger-empty">Terminal initialized. No execution strings logged in this session.</li>
+            <li class="ledger-empty">Terminal initialized. Awaiting market executions...</li>
           </ul>
         </div>
       </section>
