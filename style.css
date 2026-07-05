@@ -7,9 +7,7 @@
   --primary: #3b82f6;
   --primary-hover: #2563eb;
   --success: #10b981;
-  --success-hover: #059669;
   --danger: #ef4444;
-  --danger-hover: #dc2626;
   --border-color: #334155;
   --radius: 8px;
 }
@@ -23,7 +21,7 @@ body {
   line-height: 1.5;
 }
 
-/* Modal Overlay UI */
+/* Modals Overlay Base */
 .modal-overlay {
   position: fixed;
   top: 0; left: 0; width: 100%; height: 100%;
@@ -54,16 +52,14 @@ input[type="text"], input[type="password"], input[type="number"], .form-select {
 }
 input:focus, .form-select:focus { outline: none; border-color: var(--primary); }
 
-/* Interface Actions and Typography */
+/* Interface Actions styling */
 .btn { display: inline-flex; align-items: center; justify-content: center; padding: 0.75rem 1.5rem; font-size: 0.938rem; font-weight: 600; border-radius: 6px; border: none; cursor: pointer; transition: background-color 0.15s ease; }
 .btn-primary { background-color: var(--primary); color: white; }
 .btn-primary:hover { background-color: var(--primary-hover); }
 .btn-secondary { background-color: var(--bg-surface-elevated); color: var(--text-main); }
 .btn-secondary:hover { background-color: var(--border-color); }
 .btn-success { background-color: var(--success); color: white; width: 100%; }
-.btn-success:hover { background-color: var(--success-hover); }
 .btn-danger { background-color: var(--danger); color: white; width: 100%; }
-.btn-danger:hover { background-color: var(--danger-hover); }
 .btn-sm { width: auto; padding: 0.5rem 1rem; font-size: 0.813rem; }
 .btn-group { display: flex; gap: 10px; margin-top: 0.5rem; }
 
@@ -72,7 +68,7 @@ input:focus, .form-select:focus { outline: none; border-color: var(--primary); }
 .form-link:hover { text-decoration: underline; }
 .error-msg { color: var(--danger); font-size: 0.875rem; margin-top: 1rem; text-align: center; }
 
-/* Dashboard Core Grid Framework Layout */
+/* Dashboard Architectural Framework Grid Layout */
 .main-header { display: flex; justify-content: space-between; align-items: center; padding: 1rem 2rem; background-color: var(--bg-surface); border-bottom: 1px solid var(--border-color); }
 .logo-area { display: flex; align-items: center; gap: 12px; }
 .logo-area h1 { font-size: 1.25rem; }
@@ -99,9 +95,10 @@ input:focus, .form-select:focus { outline: none; border-color: var(--primary); }
 .sidebar-panels { display: flex; flex-direction: column; gap: 1.5rem; }
 .compact-card { padding: 1.25rem; }
 
-/* Candlestick Layout Properties Injection */
-.chart-container-card { display: flex; flex-direction: column; height: 100%; min-height: 450px; }
-#chart { flex-grow: 1; width: 100%; height: 100%; min-height: 380px; }
+/* Custom Native Canvas Styling Framework */
+.chart-container-card { display: flex; flex-direction: column; min-height: 460px; height: 100%; }
+#chartWrapper { flex-grow: 1; width: 100%; background-color: #0b0f19; border-radius: 6px; border: 1px solid var(--border-color); overflow: hidden; position: relative; }
+#customChart { display: block; width: 100%; height: 100%; }
 
 .status-msg { font-size: 0.875rem; margin-top: 0.75rem; text-align: center; }
 .table-wrapper { background-color: var(--bg-main); border-radius: 6px; border: 1px solid var(--border-color); max-height: 200px; overflow-y: auto; }
