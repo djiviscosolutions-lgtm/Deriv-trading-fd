@@ -1,77 +1,185 @@
-body {
-  margin: 0;
-  font-family: Arial;
-  background: #0b1220;
-  color: white;
+:root {
+  --bg-app: #090d16;
+  --bg-card: #111827;
+  --bg-input: #1f2937;
+  --text-main: #f9fafb;
+  --text-muted: #9ca3af;
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --danger: #ef4444;
+  --danger-bg: rgba(239, 68, 68, 0.1);
+  --success: #10b981;
+  --success-bg: rgba(16, 185, 129, 0.1);
+  --border: #374151;
+  --radius: 8px;
 }
 
-/* LOGIN */
-.login-page {
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--bg-app);
+  color: var(--text-main);
+  display: flex;
+  min-height: 100vh;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Auth Page Structural Wrapper */
+.auth-container {
+  width: 100%;
+  padding: 20px;
   display: flex;
   justify-content: center;
-  align-items: center;
-  height: 100vh;
 }
 
-.login-box {
-  background: #111827;
-  padding: 30px;
-  border-radius: 10px;
-  width: 300px;
-}
-
-input, select {
+.auth-box {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 2.5rem 2rem;
   width: 100%;
-  padding: 10px;
-  margin: 10px 0;
-  border: none;
-  border-radius: 5px;
+  max-width: 440px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
 }
 
-button {
-  padding: 10px;
-  width: 100%;
-  margin-top: 10px;
-  border: none;
-  cursor: pointer;
-  font-weight: bold;
+.auth-header {
+  margin-bottom: 2rem;
+  text-align: center;
 }
 
-.buy {
-  background: green;
-  color: white;
+.auth-header h2 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
 }
 
-.sell {
-  background: red;
-  color: white;
+.subtitle {
+  color: var(--text-muted);
+  font-size: 0.925rem;
 }
 
-/* DASHBOARD */
-.hidden {
-  display: none;
+/* Structural Form Components */
+.input-group {
+  margin-bottom: 1.25rem;
 }
 
-header {
+.label-wrapper {
   display: flex;
   justify-content: space-between;
-  padding: 20px;
-  background: #111827;
+  align-items: center;
 }
 
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 20px;
-  padding: 20px;
+label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  color: var(--text-main);
 }
 
-.card {
-  background: #1f2937;
-  padding: 20px;
-  border-radius: 10px;
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background-color: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-main);
+  font-size: 1rem;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
-.full {
-  grid-column: span 2;
+input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25);
+}
+
+/* Auxiliary Interactive Links and Inputs */
+.form-link {
+  color: var(--primary);
+  text-decoration: none;
+  font-size: 0.875rem;
+  transition: color 0.15s ease;
+}
+
+.form-link:hover {
+  color: var(--primary-hover);
+  text-decoration: underline;
+}
+
+.form-actions {
+  margin: 1.25rem 0;
+  display: flex;
+  align-items: center;
+}
+
+.checkbox-container {
+  display: flex;
+  align-items: center;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  user-select: none;
+  gap: 8px;
+}
+
+/* Submission Framework */
+.btn {
+  width: 100%;
+  padding: 0.75rem 1.25rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: var(--radius);
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.btn-primary {
+  background-color: var(--primary);
+  color: #ffffff;
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-hover);
+}
+
+/* Alert Boxes */
+.alert {
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius);
+  font-size: 0.875rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid transparent;
+}
+
+.alert-danger {
+  background-color: var(--danger-bg);
+  color: var(--danger);
+  border-color: rgba(239, 68, 68, 0.2);
+}
+
+.alert-success {
+  background-color: var(--success-bg);
+  color: var(--success);
+  border-color: rgba(16, 185, 129, 0.2);
+}
+
+.hidden {
+  display: none !important;
+}
+
+.auth-footer {
+  margin-top: 2rem;
+  text-align: center;
+  font-size: 0.875rem;
+  color: var(--text-muted);
 }
