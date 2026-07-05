@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nexus FX Engine | Risk Analytics Guide</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="dashboard">
+    <header class="main-header">
+      <div class="logo-area">
+        <h1>NEXUS <span class="light-text">PRO MANUAL</span></h1>
+      </div>
+      <nav class="central-nav-links">
+        <a href="index.html" class="nav-tab">Trading Desk</a>
+        <a href="educational.html" class="nav-tab active">Analysis Guide</a>
+        <a href="profile.html" class="nav-tab">Account Vault</a>
+      </nav>
+    </header>
+
+    <main style="padding: 2.5rem; max-width: 1000px; margin: 0 auto;">
+      <section class="card" style="margin-bottom: 2rem;">
+        <h2 style="color: var(--primary); margin-bottom: 1rem;">Spot Leverage vs Duration Options</h2>
+        <p style="color: var(--text-main); margin-bottom: 1.5rem; font-size: 0.95rem;">
+          To trade effectively like a professional inside institutional liquidity feeds, you must master the two separate clearing frameworks provided on the trading desk.
+        </p>
+        
+        <div class="input-group" style="background: var(--bg-main); padding: 1.5rem; border-radius: 4px; border-left: 4px solid var(--success); margin-bottom: 1.5rem;">
+          <h4 style="color: var(--success); margin-bottom: 0.5rem;">1. Spot Risk Parameter Processing (SL/TP)</h4>
+          <p style="font-size: 0.85rem; color: #cbd5e1; line-height: 1.6;">
+            When you deploy a Spot order, your contract stays open indefinitely until price reaches your predefined safety boundaries. 
+            <strong>Stop Loss (SL)</strong> sets an exact line where the contract cuts losses automatically. 
+            <strong>Take Profit (TP)</strong> specifies the exact exit point to capture earnings before a reversal.
+          </p>
+        </div>
+
+        <div class="input-group" style="background: var(--bg-main); padding: 1.5rem; border-radius: 4px; border-left: 4px solid var(--primary);">
+          <h4 style="color: var(--primary); margin-bottom: 0.5rem;">2. Fixed Duration Options Contract (Deriv Style)</h4>
+          <p style="font-size: 0.85rem; color: #cbd5e1; line-height: 1.6;">
+            A duration options model is a time-bound derivative contract. You stipulate the exact lifespan of your order. When the stopwatch timer counts down to zero, the engine compares the exit price against your entry target. If a Buy contract closes even a fraction of a pip above entry, you win a premium layout return. If it closes below, the collateral is completely cleared.
+          </p>
+        </div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>
+
