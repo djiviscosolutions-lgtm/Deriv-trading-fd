@@ -3,38 +3,29 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Institutional Trading Simulator</title>
+  <title>Institutional Trading Terminal</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <main id="loginPage" class="login-page">
-    <div class="login-box">
-      <h2>Trading Platform</h2>
-      <p class="subtitle">Enter your credentials to access the terminal</p>
-      
-      <div class="input-group">
-        <label for="username">Username</label>
-        <input type="text" id="username" placeholder="e.g., trader_one">
-      </div>
-      
-      <div class="input-group">
-        <label for="password">Password</label>
-        <input type="password" id="password" placeholder="••••••••">
-      </div>
-
-      <button class="btn btn-primary" onclick="login()">Sign In</button>
-      <p id="loginMsg" class="error-msg"></p>
+  <div id="authModal" class="modal-overlay hidden">
+    <div class="auth-box">
+      <div class="modal-close" onclick="closeAuthModal()">&times;</div>
+      <div id="modalFormContainer">
+        </div>
     </div>
-  </main>
+  </div>
 
-  <div id="dashboard" class="dashboard hidden">
+  <div id="dashboard" class="dashboard">
     <header class="main-header">
       <div class="logo-area">
         <h1>Trading Terminal</h1>
         <span class="badge live">Live Market</span>
       </div>
-      <button class="btn btn-secondary btn-sm" onclick="logout()">Logout</button>
+      <div id="authHeaderActions">
+        <button class="btn btn-primary btn-sm" onclick="openAuthModal('login')">Sign In</button>
+        <button class="btn btn-secondary btn-sm" onclick="openAuthModal('register')">Register</button>
+      </div>
     </header>
 
     <main class="grid">
