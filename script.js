@@ -4,11 +4,123 @@ let balance = 10000.00;
 const prices = { "EUR/USD": 1.1000, "GBP/USD": 1.2500, "USD/JPY": 145.00, "BTC/USD": 65000.00 };
 let currentPair = "EUR/USD";
 
+// Charting Engine State Handles
+let chart = null;
+let candleSeries = null;
+let currentBar = null;
+let lastBarTime = null;
+
 function getPipPrecision(pair) {
   return (pair === "USD/JPY" || pair === "BTC/USD") ? 2 : 4;
 }
 
-// Intercept Layout Engine to enforce Verification Checks
+// Initialize Candlestick Chart Framework Canvas
+function initChart() {
+  const chartElement = document.getElementById('chart');
+  
+  chart = LightweightCharts.createChart(chartElement, {
+    layout: {
+      background: { type: 'solid', color: '#1e293b' },
+      textColor: '#94a3b8',
+    },
+    grid: {
+      vertLines: { color: 'rgba(51, 65, 85, 0.5)' },
+      horzLines: { color: 'rgba(51, 65, 85, 0.5)' },
+    },
+    crosshair: { mode: LightweightCharts.CrosshairMode.Normal },
+    rightPriceScale: { borderColor: '#334155' },
+    timeScale: { borderColor: '#334155', timeVisible: true, secondsVisible: false },
+  });
+
+  candleSeries = chart.addCandlestickSeries({
+    upColor: '#10b981', downColor: '#ef4444',
+    borderUpColor: '#10b981', borderDownColor: '#ef4444',
+    wickUpColor: '#10b981', wickDownColor: '#ef4444',
+  });
+
+  generateMockHistory();
+
+  // Watch for layout viewport changes to scale structural frames smoothly
+  new ResizeObserver(() => {
+    chart.applyOptions({ width: chartElement.clientWidth, height: chartElement.clientHeight });
+  }).observe(chartElement);
+}
+
+// Generate Historical Placeholder Bars based on the Target Asset
+function generateMockHistory() {
+  const basePrice = prices[currentPair];
+  let mockData = [];
+  const totalBars = 60; // Render 60 pre-existing data bars 
+  let timeTracker = Math.floor(Date.now() / 1000) - (totalBars * 60);
+
+  let rollingClose = basePrice;
+  const varianceFactor = basePrice > 1000 ? 25 : (basePrice > 100 ? 0.15 : 0.001);
+
+  for (let i = 0; i < totalBars; i++) {
+    let open = rollingClose;
+    let close = open + ((Math.random() - 0.5) * varianceFactor);
+    let high = Math.max(open, close) + (Math.random() * (varianceFactor / 2));
+    let low = Math.min(open, close) - (Math.random() * (varianceFactor / 2));
+
+    mockData.push({ time: timeTracker, open, high, low, close });
+    rollingClose = close;
+    timeTracker += 60;
+  }
+
+  candleSeries.setData(mockData);
+  
+  // Set up pointer hooks targeting state changes inside execution loops
+  currentBar = { ...mockData[mockData.length - 1] };
+  lastBarTime = currentBar.time;
+  prices[currentPair] = currentBar.close;
+}
+
+// Regenerate market perspectives on selection transitions
+function changePair() {
+  currentPair = document.getElementById("pair").value;
+  generateMockHistory();
+  updateUI();
+}
+
+// Streaming Core Price Updates into Live Candlesticks 
+function streamMarketTick() {
+  const basePrice = prices[currentPair];
+  const scaleFactor = basePrice > 1000 ? 15.0 : (basePrice > 100 ? 0.05 : 0.0002);
+  const change = (Math.random() - 0.5) * scaleFactor;
+  
+  const nextPrice = Math.max(0.0001, basePrice + change);
+  prices[currentPair] = nextPrice;
+
+  const currentTime = Math.floor(Date.now() / 1000);
+  const currentMinuteWindow = currentTime - (currentTime % 60);
+
+  if (currentMinuteWindow > lastBarTime) {
+    // Construct a brand-new processing bar window
+    currentBar = {
+      time: currentMinuteWindow,
+      open: nextPrice,
+      high: nextPrice,
+      low: nextPrice,
+      close: nextPrice
+    };
+    lastBarTime = currentMinuteWindow;
+  } else {
+    // Expand parameters mapping to the current active candle bar window
+    currentBar.close = nextPrice;
+    if (nextPrice > currentBar.high) currentBar.high = nextPrice;
+    if (nextPrice < currentBar.low) currentBar.low = nextPrice;
+  }
+
+  candleSeries.update(currentBar);
+  updateUI();
+}
+
+function updateUI() {
+  document.getElementById("balance").innerText = `$${balance.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+  document.getElementById("price").innerText = prices[currentPair].toFixed(getPipPrecision(currentPair));
+}
+
+/* Order Execution Gateways */
 function processOrder(type) {
   const statusMsg = document.getElementById("tradeMsg");
   
@@ -54,7 +166,7 @@ function processOrder(type) {
 function buyTrade() { processOrder("BUY"); }
 function sellTrade() { processOrder("SELL"); }
 
-// Auth Modals Routing Engine
+/* Auth Views Framework Modals Overlay UI Router Engine */
 function openAuthModal(view) {
   const container = document.getElementById("modalFormContainer");
   document.getElementById("authModal").classList.remove("hidden");
@@ -87,9 +199,7 @@ function openAuthModal(view) {
   }
 }
 
-function closeAuthModal() {
-  document.getElementById("authModal").classList.add("hidden");
-}
+function closeAuthModal() { document.getElementById("authModal").classList.add("hidden"); }
 
 function submitAuth(event, type) {
   event.preventDefault();
@@ -99,46 +209,22 @@ function submitAuth(event, type) {
 
   if (type === 'register') {
     const confirmPass = document.getElementById("auth_confirm").value;
-    if (pass.length < 8) {
-      errorEl.innerText = "Password must be at least 8 characters.";
-      errorEl.classList.remove("hidden");
-      return;
-    }
-    if (pass !== confirmPass) {
-      errorEl.innerText = "Passwords do not match.";
-      errorEl.classList.remove("hidden");
-      return;
-    }
+    if (pass.length < 8) { errorEl.innerText = "Password must be at least 8 characters."; errorEl.classList.remove("hidden"); return; }
+    if (pass !== confirmPass) { errorEl.innerText = "Passwords do not match."; errorEl.classList.remove("hidden"); return; }
   }
 
-  // Authentication status conversion successful
   isAuthenticated = true;
   closeAuthModal();
   
-  // Transform layout headers to showcase user profiles
   document.getElementById("authHeaderActions").innerHTML = `
     <span style="margin-right:15px; color:var(--text-muted); align-self:center">Active: <strong>${user}</strong></span>
     <button class="btn btn-secondary btn-sm" onclick="logout()">Logout</button>
   `;
-  
   document.getElementById("tradeMsg").innerText = "Successfully logged in. Execution features unlocked.";
   document.getElementById("tradeMsg").style.color = "var(--success)";
 }
 
-function logout() {
-  window.location.reload();
-}
-
-// Base Operational Engine Loops
-function updateUI() {
-  document.getElementById("balance").innerText = `$${balance.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
-  document.getElementById("price").innerText = prices[currentPair].toFixed(getPipPrecision(currentPair));
-}
-
-function changePair() {
-  currentPair = document.getElementById("pair").value;
-  updateUI();
-}
+function logout() { window.location.reload(); }
 
 function addHistoryRecord(action, pair, volume, executionPrice) {
   const historyContainer = document.getElementById("history");
@@ -151,13 +237,9 @@ function addHistoryRecord(action, pair, volume, executionPrice) {
   historyContainer.insertBefore(li, historyContainer.firstChild);
 }
 
-// Active market feed simulations run universally right out of the gate
-setInterval(() => {
-  for (let pair in prices) {
-    const scaleFactor = prices[pair] > 1000 ? 15.0 : (prices[pair] > 100 ? 0.05 : 0.0002);
-    prices[pair] = Math.max(0.0001, prices[pair] + ((Math.random() - 0.5) * scaleFactor));
-  }
+// Launch application scripts on complete window initialization loops
+window.onload = () => {
+  initChart();
+  setInterval(streamMarketTick, 1000); // Clock high-frequency ticks every 1 second
   updateUI();
-}, 2000);
-
-updateUI();
+};
