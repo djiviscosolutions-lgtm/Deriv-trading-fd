@@ -1,118 +1,160 @@
-// App State
+// Global App Configuration
 let isAuthenticated = false; 
 let balance = 10000.00;
 const prices = { "EUR/USD": 1.1000, "GBP/USD": 1.2500, "USD/JPY": 145.00, "BTC/USD": 65000.00 };
 let currentPair = "EUR/USD";
 
-// Charting Engine State Handles
-let chart = null;
-let candleSeries = null;
-let currentBar = null;
-let lastBarTime = null;
+// Custom Canvas State Configuration Arrays
+let mockHistory = [];
+const maxVisibleCandles = 35; // Number of bars visible on screen simultaneously
 
 function getPipPrecision(pair) {
   return (pair === "USD/JPY" || pair === "BTC/USD") ? 2 : 4;
 }
 
-// Initialize Candlestick Chart Framework Canvas
-function initChart() {
-  const chartElement = document.getElementById('chart');
+// Generate Proprietary In-Memory Historical Arrays
+function generateOwnHistory() {
+  mockHistory = [];
+  let basePrice = prices[currentPair];
+  const variance = basePrice > 1000 ? 40 : (basePrice > 100 ? 0.25 : 0.0015);
   
-  chart = LightweightCharts.createChart(chartElement, {
-    layout: {
-      background: { type: 'solid', color: '#1e293b' },
-      textColor: '#94a3b8',
-    },
-    grid: {
-      vertLines: { color: 'rgba(51, 65, 85, 0.5)' },
-      horzLines: { color: 'rgba(51, 65, 85, 0.5)' },
-    },
-    crosshair: { mode: LightweightCharts.CrosshairMode.Normal },
-    rightPriceScale: { borderColor: '#334155' },
-    timeScale: { borderColor: '#334155', timeVisible: true, secondsVisible: false },
-  });
+  let rollingClose = basePrice;
+  for (let i = 0; i < maxVisibleCandles; i++) {
+    let open = rollingClose;
+    let close = open + ((Math.random() - 0.5) * variance);
+    let high = Math.max(open, close) + (Math.random() * (variance / 1.8));
+    let low = Math.min(open, close) - (Math.random() * (variance / 1.8));
 
-  candleSeries = chart.addCandlestickSeries({
-    upColor: '#10b981', downColor: '#ef4444',
-    borderUpColor: '#10b981', borderDownColor: '#ef4444',
-    wickUpColor: '#10b981', wickDownColor: '#ef4444',
-  });
-
-  generateMockHistory();
-
-  // Watch for layout viewport changes to scale structural frames smoothly
-  new ResizeObserver(() => {
-    chart.applyOptions({ width: chartElement.clientWidth, height: chartElement.clientHeight });
-  }).observe(chartElement);
+    mockHistory.push({ open, high, low, close });
+    rollingClose = close;
+  }
+  // Balance latest snapshot values to the current position tracker
+  prices[currentPair] = mockHistory[mockHistory.length - 1].close;
 }
 
-// Generate Historical Placeholder Bars based on the Target Asset
-function generateMockHistory() {
-  const basePrice = prices[currentPair];
-  let mockData = [];
-  const totalBars = 60; // Render 60 pre-existing data bars 
-  let timeTracker = Math.floor(Date.now() / 1000) - (totalBars * 60);
+// Proprietary 2D Math Canvas Rendering Engine
+function renderOwnChart() {
+  const canvas = document.getElementById("customChart");
+  const wrapper = document.getElementById("chartWrapper");
+  if (!canvas) return;
 
-  let rollingClose = basePrice;
-  const varianceFactor = basePrice > 1000 ? 25 : (basePrice > 100 ? 0.15 : 0.001);
+  const ctx = canvas.getContext("2d");
+  
+  // Set explicit dynamic canvas resolution properties to avoid scaling blur
+  const rect = wrapper.getBoundingClientRect();
+  canvas.width = rect.width;
+  canvas.height = rect.height;
 
-  for (let i = 0; i < totalBars; i++) {
-    let open = rollingClose;
-    let close = open + ((Math.random() - 0.5) * varianceFactor);
-    let high = Math.max(open, close) + (Math.random() * (varianceFactor / 2));
-    let low = Math.min(open, close) - (Math.random() * (varianceFactor / 2));
+  const width = canvas.width;
+  const height = canvas.height;
+  const paddingRight = 70; // Reserve workspace margin area for pricing scale rulers
+  const paddingTopBottom = 30;
+  const chartWidth = width - paddingRight;
+  const chartHeight = height - (paddingTopBottom * 2);
 
-    mockData.push({ time: timeTracker, open, high, low, close });
-    rollingClose = close;
-    timeTracker += 60;
+  // Clear Canvas frames prior to redrawing loops
+  ctx.fillStyle = "#0b0f19";
+  ctx.fillRect(0, 0, width, height);
+
+  if (mockHistory.length === 0) return;
+
+  // Step 1: Scan for localized high/low points to establish vertical dynamic bounding boxes
+  let maxPrice = Math.max(...mockHistory.map(c => c.high));
+  let minPrice = Math.min(...mockHistory.map(c => c.low));
+  
+  // Prevent zero-division errors if prices flatten out completely
+  if (maxPrice === minPrice) {
+    maxPrice += 0.01;
+    minPrice -= 0.01;
   }
 
-  candleSeries.setData(mockData);
-  
-  // Set up pointer hooks targeting state changes inside execution loops
-  currentBar = { ...mockData[mockData.length - 1] };
-  lastBarTime = currentBar.time;
-  prices[currentPair] = currentBar.close;
+  // Inject buffer padding ranges inside top/bottom chart edges
+  const priceRange = maxPrice - minPrice;
+  maxPrice += priceRange * 0.05;
+  minPrice -= priceRange * 0.05;
+  const adjustedRange = maxPrice - minPrice;
+
+  // Step 2: Draw horizontal grid line parameters across backgrounds
+  ctx.strokeStyle = "rgba(51, 65, 85, 0.25)";
+  ctx.lineWidth = 1;
+  ctx.font = "11px monospace";
+  ctx.fillStyle = "#94a3b8";
+
+  const gridLinesCount = 4;
+  for (let i = 0; i <= gridLinesCount; i++) {
+    const y = paddingTopBottom + (chartHeight * (i / gridLinesCount));
+    const priceValue = maxPrice - (adjustedRange * (i / gridLinesCount));
+
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.lineTo(chartWidth, y);
+    ctx.stroke();
+
+    // Text output parameters mapping to the scale values
+    ctx.fillText(priceValue.toFixed(getPipPrecision(currentPair)), chartWidth + 8, y + 4);
+  }
+
+  // Step 3: Loop and map coordinate points to render every candlestick
+  const candleSpacing = chartWidth / maxVisibleCandles;
+  const candleWidth = candleSpacing * 0.7;
+
+  for (let i = 0; i < mockHistory.length; i++) {
+    const candle = mockHistory[i];
+    const isBullish = candle.close >= candle.open;
+
+    // Map math coordinates cleanly to canvas pixels
+    const x = (i * candleSpacing) + (candleSpacing - candleWidth) / 2;
+    const yOpen = paddingTopBottom + chartHeight * (1 - (candle.open - minPrice) / adjustedRange);
+    const yClose = paddingTopBottom + chartHeight * (1 - (candle.close - minPrice) / adjustedRange);
+    const yHigh = paddingTopBottom + chartHeight * (1 - (candle.high - minPrice) / adjustedRange);
+    const yLow = paddingTopBottom + chartHeight * (1 - (candle.low - minPrice) / adjustedRange);
+
+    const candleColor = isBullish ? "#10b981" : "#ef4444";
+    ctx.strokeStyle = candleColor;
+    ctx.fillStyle = candleColor;
+
+    // Draw the Wick (Vertical high-low range line)
+    ctx.beginPath();
+    ctx.moveTo(x + (candleWidth / 2), yHigh);
+    ctx.lineTo(x + (candleWidth / 2), yLow);
+    ctx.stroke();
+
+    // Draw Candle Body block rectangles
+    const top = Math.min(yOpen, yClose);
+    const bodyHeight = Math.max(1, Math.abs(yOpen - yClose)); // Guarantee a 1px minimum height
+    ctx.fillRect(x, top, candleWidth, bodyHeight);
+  }
 }
 
-// Regenerate market perspectives on selection transitions
+// Push live variations into memory objects
+function streamNativeTick() {
+  if (mockHistory.length === 0) return;
+
+  const latestIndex = mockHistory.length - 1;
+  let activeCandle = mockHistory[latestIndex];
+  
+  const basePrice = activeCandle.close;
+  const scale = basePrice > 1000 ? 12.0 : (basePrice > 100 ? 0.04 : 0.00015);
+  const change = (Math.random() - 0.5) * scale;
+  const nextPrice = Math.max(0.0001, basePrice + change);
+
+  // Update calculation states on our latest candle object
+  activeCandle.close = nextPrice;
+  if (nextPrice > activeCandle.high) activeCandle.high = nextPrice;
+  if (nextPrice < activeCandle.low) activeCandle.low = nextPrice;
+
+  prices[currentPair] = nextPrice;
+  
+  updateUI();
+  renderOwnChart();
+}
+
+// Shuffle historical datasets on active select conversions
 function changePair() {
   currentPair = document.getElementById("pair").value;
-  generateMockHistory();
+  generateOwnHistory();
   updateUI();
-}
-
-// Streaming Core Price Updates into Live Candlesticks 
-function streamMarketTick() {
-  const basePrice = prices[currentPair];
-  const scaleFactor = basePrice > 1000 ? 15.0 : (basePrice > 100 ? 0.05 : 0.0002);
-  const change = (Math.random() - 0.5) * scaleFactor;
-  
-  const nextPrice = Math.max(0.0001, basePrice + change);
-  prices[currentPair] = nextPrice;
-
-  const currentTime = Math.floor(Date.now() / 1000);
-  const currentMinuteWindow = currentTime - (currentTime % 60);
-
-  if (currentMinuteWindow > lastBarTime) {
-    // Construct a brand-new processing bar window
-    currentBar = {
-      time: currentMinuteWindow,
-      open: nextPrice,
-      high: nextPrice,
-      low: nextPrice,
-      close: nextPrice
-    };
-    lastBarTime = currentMinuteWindow;
-  } else {
-    // Expand parameters mapping to the current active candle bar window
-    currentBar.close = nextPrice;
-    if (nextPrice > currentBar.high) currentBar.high = nextPrice;
-    if (nextPrice < currentBar.low) currentBar.low = nextPrice;
-  }
-
-  candleSeries.update(currentBar);
-  updateUI();
+  renderOwnChart();
 }
 
 function updateUI() {
@@ -120,7 +162,7 @@ function updateUI() {
   document.getElementById("price").innerText = prices[currentPair].toFixed(getPipPrecision(currentPair));
 }
 
-/* Order Execution Gateways */
+/* Internal Account Processing Infrastructure */
 function processOrder(type) {
   const statusMsg = document.getElementById("tradeMsg");
   
@@ -166,7 +208,7 @@ function processOrder(type) {
 function buyTrade() { processOrder("BUY"); }
 function sellTrade() { processOrder("SELL"); }
 
-/* Auth Views Framework Modals Overlay UI Router Engine */
+/* Gateway Modals Controllers */
 function openAuthModal(view) {
   const container = document.getElementById("modalFormContainer");
   document.getElementById("authModal").classList.remove("hidden");
@@ -237,9 +279,18 @@ function addHistoryRecord(action, pair, volume, executionPrice) {
   historyContainer.insertBefore(li, historyContainer.firstChild);
 }
 
-// Launch application scripts on complete window initialization loops
-window.onload = () => {
-  initChart();
-  setInterval(streamMarketTick, 1000); // Clock high-frequency ticks every 1 second
+// App Entry Points Initialization Loops
+document.addEventListener("DOMContentLoaded", () => {
+  generateOwnHistory();
   updateUI();
-};
+  
+  // Timeout wrapper avoids window dimension evaluation failures during fast loads
+  setTimeout(() => {
+    renderOwnChart();
+    // Fire high frequency price ticks every second
+    setInterval(streamNativeTick, 1000);
+  }, 150);
+
+  // Redraw structural grids automatically if user tilts device or expands terminal window panels
+  window.addEventListener("resize", renderOwnChart);
+});
