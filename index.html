@@ -3,9 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Institutional Trading Terminal</title>
+  <title>Proprietary Trading Terminal</title>
   <link rel="stylesheet" href="style.css">
-  <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
 </head>
 <body>
 
@@ -20,7 +19,7 @@
     <header class="main-header">
       <div class="logo-area">
         <h1>Trading Terminal</h1>
-        <span class="badge live">Live Market</span>
+        <span class="badge live">Internal Feed</span>
       </div>
       <div id="authHeaderActions">
         <button class="btn btn-primary btn-sm" onclick="openAuthModal('login')">Sign In</button>
@@ -30,8 +29,10 @@
 
     <main class="grid">
       <section class="card chart-container-card">
-        <h3>Live Market Candles</h3>
-        <div id="chart"></div>
+        <h3>Proprietary Market Candles</h3>
+        <div id="chartWrapper">
+          <canvas id="customChart"></canvas>
+        </div>
       </section>
 
       <div class="sidebar-panels">
